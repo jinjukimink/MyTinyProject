@@ -15,6 +15,7 @@ const Header=styled.div`
     justify-content: center;
     align-items: center;
 
+//
 `;
 const CoinsList=styled.ul``
 

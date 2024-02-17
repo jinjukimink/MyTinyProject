@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 interface Params {
     coinId : string|undefined;
 }
-
+//test for git
 function Coin(){
     const {coinId} = useParams<string>();
     //console.log(params);
