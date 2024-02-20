@@ -26,8 +26,11 @@ const Coin=styled.li`
     padding:20px;
     border-radius: 15px;
     a{
+        display: flex;
+        align-items: center;
+        padding: 20px;
         transition:color 0.2s ease-in;
-        display: block;//버튼의 모든 영역을 눌러도 클릭이 되게 하기 위해서.
+        //display: block;//버튼의 모든 영역을 눌러도 클릭이 되게 하기 위해서.
     }
     &:hover{
         a{
@@ -45,8 +48,16 @@ const Title=styled.h1`
 
 const Loader=styled.span`
     text-align: center;
-    display:block
+    display:block;
+    color:yellow;
 `
+;
+
+const Img=styled.img`
+    width:35px;
+    height: 35px;
+    margin-right: 10px;
+`;
 
 interface CoinInterface{
     id: string,
@@ -62,13 +73,15 @@ function Coins(){
     const[coins,setCoins]=useState<CoinInterface[]>([]);//타입스크립트에게 coin는 CoinInterface배열로 이루어진 배열이라는 것을 알려준다.
     const URL= "https://api.coinpaprika.com/v1/coins ";
     const[loading,setLoading]=useState(true);
-    useEffect(()=>{(async()=>{
+    useEffect(()=>{
+        (async()=>{
             const response = await fetch(URL);
             const json=await response.json();
             setCoins(json.slice(0,100));//너무 사이즈가 크니깐 100개만 가져올거임
             console.log(coins);
             setLoading(false);
-        })();}
+        })();
+    }
     ,[])
     return (
         <>
@@ -76,7 +89,14 @@ function Coins(){
         <Header>
         <Title>코인</Title>
         </Header>
-        {loading?<Loader/>:<CoinsList>{coins.map(coin => <Coin key={coin.id}> <Link to={`/${coin.id}`}>{coin.name} &rarr;</Link></Coin>)}</CoinsList>}
+        {loading?<Loader/>:
+            <CoinsList>{coins.map(coin => <Coin key={coin.id}> 
+            <Link to= {`/${coin.id}`} state ={coin}
+            >
+            <Img src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`} alt="코인 사진"/>{coin.name} &rarr;</Link>
+            </Coin>)
+        }
+            </CoinsList>}
         </Container>
         </>
     );
