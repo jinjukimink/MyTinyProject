@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams,useLocation, Outlet } from "react-router-dom";
+import { useParams,useLocation, Outlet,Link,useMatch } from "react-router-dom";
 import styled from "styled-components";
 
 const Container=styled.div`
@@ -111,6 +111,21 @@ interface IPriceData{
 const Text=styled.span`
     color: white;
 `
+const Tab=styled.span<{isActive:boolean}>`
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 400;
+    background-color: rgba(0,0,0,0.5);
+    padding: 7px 0px;
+    border-radius: 10px;
+    color:${props=>props.isActive? props.theme.accentColor: props.theme.textColor};
+    a{
+        display: block;
+    }
+
+`;
+
 
 
 function Coin(){
@@ -119,6 +134,9 @@ function Coin(){
     const {state} = useLocation();//받았다.
     const [info,setInfo]=useState<IInfoData>();
     const[priceInfo,setPriceInfo]=useState<IPriceData>();
+    const priceMatch = useMatch("/:coinId/price");
+    const chartMatch=useMatch("/:coinId/chart");
+    console.log(priceMatch);
 
     useEffect(()=>{
         (async()=>{
@@ -163,7 +181,6 @@ function Coin(){
                 <span>Total Supply:</span>
                 <span>{priceInfo?.total_supply}</span>
                 </OverViewItem>
-
                 <OverViewItem>
                 <span>Max Apply:</span>
                 <span>{priceInfo?.max_supply}</span>
@@ -171,10 +188,16 @@ function Coin(){
             </OverView>
         </>
         )}
+        <Tab isActive={chartMatch!==null}>
+        <Link to={`/${coinId}/chart`}>Chart</Link>
+        </Tab>
+        <Tab isActive={priceMatch!==null}>
+        <Link to={`/${coinId}/price`}>Price</Link> 
+        </Tab>
         <Outlet/>
         </Container>
         );
 } 
 
 export default Coin;
-
+ 
