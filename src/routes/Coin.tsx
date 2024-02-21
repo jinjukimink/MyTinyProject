@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams,useLocation } from "react-router-dom";
+import { useParams,useLocation, Outlet } from "react-router-dom";
 import styled from "styled-components";
 
+const Container=styled.div`
+    padding:0px 20px;
+    max-width: 480px;
+    margin: 0 auto;
+`
 const Title=styled.h1`
     font-size:48px;
     color:${props=>props.theme.accentColor}
@@ -12,19 +17,27 @@ const Loader=styled.span`
     color:yellow;
 `;
 
-const Container=styled.div`
-    padding:0px 20px;
-    max-width: 480px;
-    margin: 0 auto;
-    
-`
 const Header=styled.div`
     height: 10vh;
     display: flex;
     justify-content: center;
     align-items: center;
-
 //
+`;
+
+const OverView=styled.div`//크기를 설정 안하면? 
+    background-color: rgba(0,0,0,0.5);
+    border-radius:10px;
+    display:flex;
+    justify-content: space-between;
+    padding: 40px 20px
+    `;
+
+const OverViewItem=styled.div`
+`;
+
+const Description=styled.div`
+    margin:20px 0px;
 `;
 
 interface Params {
@@ -34,12 +47,6 @@ interface RouteState{
     name:string;
 }
 
-/* interface ITag{
-    coin_counter: number;
-    ico_counter:number;
-    id:string;
-    name:string;
-} */
 interface IInfoData{
     id:string;
     name:string;
@@ -113,7 +120,6 @@ function Coin(){
     const [info,setInfo]=useState<IInfoData>();
     const[priceInfo,setPriceInfo]=useState<IPriceData>();
 
-
     useEffect(()=>{
         (async()=>{
             const infoData= await(await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
@@ -122,21 +128,52 @@ function Coin(){
             ).json();
             setInfo(infoData);
             setPriceInfo(priceData);
-            
-            //console.log(infoData);
-            //console.log(priceData)
+            setLoading(false);
         })()
-    },[])
+    },[coinId])
     console.log(priceInfo?.quotes.USD.market_cap_change_24h);
 
-    return (<Container>
-    <Header>
-        <Title>{state?.name||"Loading..."}</Title>
-    </Header>
-    {loading?<Loader/>:priceInfo?.quotes.USD.market_cap_change_24h
-    }
-    </Container>);
+    return (
+        <Container>
+        <Header>
+            <Title>{state?.name? state.name: loading? "Loading...": info?.name}</Title>
+        </Header>
+        {loading? <Loader>Loading...</Loader>
+        :(
+            <>
+            <OverView>
+                <OverViewItem>
+                <span>Rank:</span>
+                <span>{info?.rank}</span>
+                </OverViewItem>
 
+                <OverViewItem>
+                <span>Symbol: </span>
+                <span>{info?.symbol}</span>
+                </OverViewItem>
+
+                <OverViewItem>
+                <span>Open Source:</span>
+                <span>{info?.open_source?"Yes":"No"}</span>
+                </OverViewItem>
+            </OverView>
+            <Description>{info?.description}</Description>
+            <OverView>
+                <OverViewItem>
+                <span>Total Supply:</span>
+                <span>{priceInfo?.total_supply}</span>
+                </OverViewItem>
+
+                <OverViewItem>
+                <span>Max Apply:</span>
+                <span>{priceInfo?.max_supply}</span>
+                </OverViewItem>
+            </OverView>
+        </>
+        )}
+        <Outlet/>
+        </Container>
+        );
 } 
 
 export default Coin;

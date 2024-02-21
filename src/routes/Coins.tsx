@@ -73,6 +73,7 @@ function Coins(){
     const[coins,setCoins]=useState<CoinInterface[]>([]);//타입스크립트에게 coin는 CoinInterface배열로 이루어진 배열이라는 것을 알려준다.
     const URL= "https://api.coinpaprika.com/v1/coins ";
     const[loading,setLoading]=useState(true);
+    
     useEffect(()=>{
         (async()=>{
             const response = await fetch(URL);
@@ -83,6 +84,7 @@ function Coins(){
         })();
     }
     ,[])
+    console.log(coins);
     return (
         <>
         <Container>
