@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
+import { fetchCoins } from "./api";
 
 
 const Container=styled.div`
@@ -59,7 +61,7 @@ const Img=styled.img`
     margin-right: 10px;
 `;
 
-interface CoinInterface{
+interface ICoin{
     id: string,
     name: string,
     symbol: string,
@@ -70,29 +72,15 @@ interface CoinInterface{
 }
 
 function Coins(){
-    const[coins,setCoins]=useState<CoinInterface[]>([]);//타입스크립트에게 coin는 CoinInterface배열로 이루어진 배열이라는 것을 알려준다.
-    const URL= "https://api.coinpaprika.com/v1/coins ";
-    const[loading,setLoading]=useState(true);
-    
-    useEffect(()=>{
-        (async()=>{
-            const response = await fetch(URL);
-            const json=await response.json();
-            setCoins(json.slice(0,100));//너무 사이즈가 크니깐 100개만 가져올거임
-            console.log(coins);
-            setLoading(false);
-        })();
-    }
-    ,[])
-    console.log(coins);
+    const {isLoading,data}=useQuery<ICoin[]>("allCoins",fetchCoins);//useQuery가 우리가 만든 fetcher함수를 부르고 그것을 return 값을 data에 담아주기까지 한다
     return (
         <>
         <Container>
         <Header>
         <Title>코인</Title>
         </Header>
-        {loading?<Loader/>:
-            <CoinsList>{coins.map(coin => <Coin key={coin.id}> 
+        {isLoading?<Loader/>:
+            <CoinsList>{data?.slice(0,100).map(coin => <Coin key={coin.id}> 
             <Link to= {`/${coin.id}`} state ={coin}
             >
             <Img src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`} alt="코인 사진"/>{coin.name} &rarr;</Link>

@@ -6,14 +6,18 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import {theme} from "./theme";
 import { ThemeProvider } from 'styled-components';
+import { QueryClient,QueryClientProvider } from 'react-query';
 
+const queryClient=new QueryClient();
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
 root.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
+    <QueryClientProvider client={queryClient}>
+    <ThemeProvider theme={theme}>{/*ThemeProvider안에 잇는 모든 것이 theme으로 접근ㅇ할 수 있다*/}
     <App/>
     </ThemeProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 ); 3
