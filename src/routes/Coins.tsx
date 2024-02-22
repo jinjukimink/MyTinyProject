@@ -73,6 +73,7 @@ interface ICoin{
 
 function Coins(){
     const {isLoading,data}=useQuery<ICoin[]>("allCoins",fetchCoins);//useQuery가 우리가 만든 fetcher함수를 부르고 그것을 return 값을 data에 담아주기까지 한다
+    console.log(data);
     return (
         <>
         <Container>

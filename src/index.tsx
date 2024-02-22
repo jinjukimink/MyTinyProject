@@ -20,4 +20,4 @@ root.render(
     </ThemeProvider>
     </QueryClientProvider>
   </React.StrictMode>
-); 3
+); 
