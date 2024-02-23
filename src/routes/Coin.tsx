@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
-import { useParams,useLocation, Outlet,Link,useMatch } from "react-router-dom";
+//import { useEffect, useState } from "react";
+import { useParams,useLocation, Outlet,Link,useMatch,useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useQuery } from "react-query";
 import { fetchCoinInfo, fetchCoinTickers } from "./api";
+import {Helmet} from 'react-helmet';
+
 
 const Container=styled.div`
     padding:0px 20px;
@@ -109,10 +111,16 @@ interface IPriceData{
         }
     };
 }
-
+  
 const Text=styled.span`
     color: white;
 `
+const Tabs=styled.div`
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    margin: 25px 0px;//각자의 마진
+    gap:10px;
+`;
 const Tab=styled.span<{isActive:boolean}>`
     text-align: center;
     text-transform: uppercase;
@@ -124,27 +132,44 @@ const Tab=styled.span<{isActive:boolean}>`
     color:${props=>props.isActive? props.theme.accentColor: props.theme.textColor};
     a{
         display: block;
+        padding: 7px 0px;
     }
-
 `;
 
+const Btn=styled.button`
+    border-radius: 10px;
+    width: 200px;
+    height: 50px;
+`;
 
 
 function Coin(){
     //const [loading,setLoading]=useState(true);
     const {coinId} = useParams<string>();// 받아왔다.
-    const {state} = useLocation();//받았다.
+    const {state} = useLocation();//url 받았다.
     //const [info,setInfo]=useState<IInfoData>();
-    const[priceInfo,setPriceInfo]=useState<IPriceData>();
-    const priceMatch = useMatch("/:coinId/price");
+    //const[priceInfo,setPriceInfo]=useState<IPriceData>();
+    const priceMatch = useMatch("/:coinId/price");//지금 현재 여기있어?
+
     const chartMatch = useMatch("/:coinId/chart");
 
-    const {isLoading:infoLoading,data:infoData}=useQuery<IInfoData>(["info",coinId],()=>fetchCoinInfo(coinId!));//(식별자, parameter를 받는 함수)
-    const {isLoading:tickersLoading,data:tickersData}=useQuery<IPriceData>(["tickers",coinId],()=>fetchCoinTickers(coinId!));
+    const {isLoading:infoLoading , data:infoData }=useQuery<IInfoData>(["info",coinId],()=>fetchCoinInfo(coinId!));//(식별자, parameter를 받는 함수)
+    const {isLoading:tickersLoading , data:tickersData}=useQuery<IPriceData>(["tickers",coinId],()=>fetchCoinTickers(coinId!),
+    {
+        refetchInterval:5000,//(5초)
+    }
+    );
     
     const loading= infoLoading||tickersLoading;
+    const navigate=useNavigate();
+    function goback(){
+        navigate(-1);
+    }
+
     return (
         <Container>
+        <Helmet><title>{state?.name? state.name: loading? "Loading...": infoData?.name}</title></Helmet>
+
         <Header>
             <Title>{state?.name? state.name: loading? "Loading...": infoData?.name}</Title>
         </Header>
@@ -163,8 +188,8 @@ function Coin(){
                 </OverViewItem>
 
                 <OverViewItem>
-                <span>Open Source:</span>
-                <span>{infoData?.open_source?"Yes":"No"}</span>
+                <span>Price:</span>
+                <span>{tickersData?.quotes.USD.price.toFixed(3)}</span>
                 </OverViewItem>
             </OverView>
             <Description>{infoData?.description}</Description>
@@ -180,13 +205,18 @@ function Coin(){
             </OverView>
         </>
         )}
-        <Tab isActive={chartMatch!==null}>
-        <Link to={`/${coinId}/chart`}>Chart</Link>
-        </Tab>
-        <Tab isActive={priceMatch!==null}>
-        <Link to={`/${coinId}/price`}>Price</Link> 
-        </Tab>
-        <Outlet/>
+
+        <Tabs>
+            <Tab isActive={chartMatch!==null}>
+            <Link to={`/${coinId}/chart`}>Chart</Link>
+            </Tab>
+            <Tab isActive={priceMatch!==null}>
+            <Link to={`/${coinId}/price`}>Price</Link> 
+            </Tab>
+        </Tabs>
+        <Btn onClick={()=>navigate(-1)}>before</Btn>
+        <Btn onClick={()=>navigate(1)}>after</Btn>
+        <Outlet context={{coinId}}/>
         </Container>
         );
 } 
