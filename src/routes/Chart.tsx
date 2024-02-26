@@ -6,7 +6,12 @@ import ApexChart from "react-apexcharts";
 
 interface ChartProps{
     coinId:string;
+    //isDark:boolean;
 }
+interface ToggleDarkProps{
+    isDark:boolean;
+}
+
 interface IHistory{
     time_open: number;
     time_close:number;
@@ -18,10 +23,13 @@ interface IHistory{
     market_cap:number;
 }
 
-function Chart(){
+interface IMode{
+    isDark:boolean;
+}
+function Chart({isDark}:IMode){
     const {coinId}:ChartProps = useOutletContext();//부모한테 받은 프롭
+    //const{isDark}:ToggleDarkProps=useOutletContext();
     const{isLoading:historyLoading, data: historyData} = useQuery<IHistory[]>(["history",coinId], ()=>fetchCoinHistory(coinId));
-    //onsole.log(historyData);
     return(
     <div>
         {historyLoading?"Loading chart...":<ApexChart 
@@ -34,7 +42,7 @@ function Chart(){
         ]}
         options={{
             theme:{
-                mode:"dark"
+                mode: isDark?"dark":"light"
             },
             chart:{
                 height:300,

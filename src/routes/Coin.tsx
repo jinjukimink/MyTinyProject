@@ -1,5 +1,5 @@
 //import { useEffect, useState } from "react";
-import { useParams,useLocation, Outlet,Link,useMatch,useNavigate } from "react-router-dom";
+import { useParams,useLocation, Outlet,Link,useMatch,useNavigate, useOutletContext } from "react-router-dom";
 import styled from "styled-components";
 import { useQuery } from "react-query";
 import { fetchCoinInfo, fetchCoinTickers } from "./api";
@@ -125,7 +125,7 @@ const Tab=styled.span<{isActive:boolean}>`
     text-align: center;
     text-transform: uppercase;
     font-size: 12px;
-    font-weight: 400;
+    font-weight: 400; 
     background-color: rgba(0,0,0,0.5);
     padding: 7px 0px;
     border-radius: 10px;
@@ -142,13 +142,23 @@ const Btn=styled.button`
     height: 50px;
 `;
 
+interface IcoinId{
+    coinId:string;
+    //isDark:boolean;
+}
 
-function Coin(){
-    //const [loading,setLoading]=useState(true);
+interface ToggleDarkType{
+    isDark:boolean;
+}
+
+
+function Coin({isDark}:ToggleDarkType){//Coins로 부터 isDark정보를 받음
+    //onst [loading,setLoading]=useState(true);
+    //const {coinId}:IcoinId=useOutletContext();//부모한테서 받아왔다
+    //const {isDark}:ToggleDarkType=useOutletContext();
+
     const {coinId} = useParams<string>();// 받아왔다.
     const {state} = useLocation();//url 받았다.
-    //const [info,setInfo]=useState<IInfoData>();
-    //const[priceInfo,setPriceInfo]=useState<IPriceData>();
     const priceMatch = useMatch("/:coinId/price");//지금 현재 여기있어?
 
     const chartMatch = useMatch("/:coinId/chart");
@@ -162,9 +172,6 @@ function Coin(){
     
     const loading= infoLoading||tickersLoading;
     const navigate=useNavigate();
-    function goback(){
-        navigate(-1);
-    }
 
     return (
         <Container>
@@ -216,7 +223,7 @@ function Coin(){
         </Tabs>
         <Btn onClick={()=>navigate(-1)}>before</Btn>
         <Btn onClick={()=>navigate(1)}>after</Btn>
-        <Outlet context={{coinId}}/>
+        /* <Outlet context={{coinId}}/> */
         </Container>
         );
 } 

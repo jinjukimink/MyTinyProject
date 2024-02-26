@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { fetchCoins } from "./api";
@@ -24,10 +24,12 @@ const CoinsList=styled.ul``
 
 const Coin=styled.li`
     background-color:white;
-    color:${props=>props.theme.bgColor};
+    //color:${props=>props.theme.textColor};
+    color:black;
     margin-bottom:10px;
     padding:20px;
     border-radius: 15px;
+    border:1px solid gray;
     a{
         display: flex;
         align-items: center;
@@ -72,15 +74,25 @@ interface ICoin{
     type: string,
 }
 
-function Coins(){
+interface ICoinsProp{
+    toggleDark:()=>void;
+    isDark:boolean;
+}
+
+function Coins({toggleDark,isDark}:ICoinsProp){
     const {isLoading,data}=useQuery<ICoin[]>("allCoins",fetchCoins);//useQuery가 우리가 만든 fetcher함수를 부르고 그것을 return 값을 data에 담아주기까지 한다
-    console.log(data);
+    //const {toggleDark}:ICoinsProp = useOutletContext();
+    /* const outletContext=useOutletContext();
+    const toggleDark = outletContext? outletContext :undefined; */
     return (
         <>
         <Container>
         <Helmet><title>Coins</title></Helmet>
         <Header>
         <Title>코인</Title>
+        
+        {isDark?<button onClick={toggleDark}>change to light</button>:
+    <button onClick={toggleDark}>change to dark</button>}
         </Header>
         {isLoading?<Loader/>:
             <CoinsList>{data?.slice(0,100).map(coin => <Coin key={coin.id}> 
