@@ -3,6 +3,8 @@ import { fetchCoinHistory } from "./api";
 import { useQuery } from "react-query";
 //import ReactApexChart from "react-apexcharts";
 import ApexChart from "react-apexcharts";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "./atom";
 
 interface ChartProps{
     coinId:string;
@@ -26,9 +28,9 @@ interface IHistory{
 interface IMode{
     isDark:boolean;
 }
-function Chart({isDark}:IMode){
+function Chart(){
     const {coinId}:ChartProps = useOutletContext();//부모한테 받은 프롭
-    //const{isDark}:ToggleDarkProps=useOutletContext();
+    const isDark=useRecoilValue(isDarkAtom);
     const{isLoading:historyLoading, data: historyData} = useQuery<IHistory[]>(["history",coinId], ()=>fetchCoinHistory(coinId));
     return(
     <div>
@@ -46,7 +48,7 @@ function Chart({isDark}:IMode){
             },
             chart:{
                 height:300,
-                width:800,
+                width:800,   
                 toolbar:{
                     show:false,//위의 툴바 없애기
                 },

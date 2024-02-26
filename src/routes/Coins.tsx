@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { fetchCoins } from "./api";
 import{Helmet} from "react-helmet";
+import { useSetRecoilState } from "recoil";
+import { isDarkAtom } from "./atom";
 
 
 const Container=styled.div`
@@ -75,30 +77,30 @@ interface ICoin{
 }
 
 interface ICoinsProp{
-    toggleDark:()=>void;
-    isDark:boolean;
+
 }
 
-function Coins({toggleDark,isDark}:ICoinsProp){
+function Coins(){
+    const setDarkAtom = useSetRecoilState(isDarkAtom);
+    const toggleDarkAtom=()=>{
+        setDarkAtom(prev=>!prev);
+    }
     const {isLoading,data}=useQuery<ICoin[]>("allCoins",fetchCoins);//useQuery가 우리가 만든 fetcher함수를 부르고 그것을 return 값을 data에 담아주기까지 한다
-    //const {toggleDark}:ICoinsProp = useOutletContext();
-    /* const outletContext=useOutletContext();
-    const toggleDark = outletContext? outletContext :undefined; */
+    console.log(isDarkAtom);
     return (
         <>
         <Container>
         <Helmet><title>Coins</title></Helmet>
         <Header>
         <Title>코인</Title>
-        
-        {isDark?<button onClick={toggleDark}>change to light</button>:
-    <button onClick={toggleDark}>change to dark</button>}
+        {isDarkAtom? <button onClick={toggleDarkAtom}>change to light</button>:
+        <button onClick={toggleDarkAtom}>change to dark</button>}
         </Header>
         {isLoading?<Loader/>:
             <CoinsList>{data?.slice(0,100).map(coin => <Coin key={coin.id}> 
             <Link to= {`/${coin.id}`} state ={coin}
             >
-            <Img src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`} alt="코인 사진"/>{coin.name} &rarr;</Link>
+            <Img src  ={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`} alt="코인 사진"/>{coin.name} &rarr;</Link>
             </Coin>)
         }
             </CoinsList>}

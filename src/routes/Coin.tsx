@@ -152,7 +152,7 @@ interface ToggleDarkType{
 }
 
 
-function Coin({isDark}:ToggleDarkType){//Coins로 부터 isDark정보를 받음
+function Coin(){//Coins로 부터 isDark정보를 받음
     //onst [loading,setLoading]=useState(true);
     //const {coinId}:IcoinId=useOutletContext();//부모한테서 받아왔다
     //const {isDark}:ToggleDarkType=useOutletContext();

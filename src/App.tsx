@@ -5,6 +5,8 @@ import {darkTheme,lightTheme} from "./theme";
 import { useState } from "react";
 import { current } from "@reduxjs/toolkit";
 import { Outlet } from "react-router-dom";
+import { isDarkAtom } from "./routes/atom";
+import { useRecoilValue } from "recoil";
 const GlobalStyle = createGlobalStyle`
 
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap')
@@ -75,26 +77,18 @@ a {
 `;
 
 function App() {
-  const [isDark , setIsDark]=useState(false);
-  const toggleDark=()=>{
-      setIsDark(current=>!current);
-  }//toggleDark를 Coin에 보내야 하는데, 이 경우에는 Router.tsx에서 Coin.tsx를 라우팅하므로 Router.tsx에 해당 Props를 보내야 한다.
-  //<Router toggleDark={toggleDark}/>이렇게 보내면 되는데 그렇다고 Router가 그걸 받을 준비가 되느냐? 그게 아니지 다시 Router.tsx에 가서 Router({toggleDark})로 받아줄 준비를 해야 한다.
-  
+
+  const isDark=useRecoilValue(isDarkAtom);//default값이 들어가네
+
   return (
-    <><ThemeProvider theme={isDark?darkTheme:lightTheme}>
-      {/* <button onClick={toggleDark}>mode change</button> */}
+    <><ThemeProvider theme={isDark?darkTheme: lightTheme}>
     <GlobalStyle/>
-    <Router toggleDark={toggleDark} isDark={isDark}/>
-    {/* <Outlet context={{toggleDark, isDark}}/> */}
+    <Router/>
     <ReactQueryDevtools initialIsOpen={true}/>
     </ThemeProvider>
-    
+
     </>
   )
 }
 
-// App(isDark,modifierFn)
-// ->Router->Coins(modeifierFn)
-// ->Router->Coin->Chart(isDark)
 export default App;   
